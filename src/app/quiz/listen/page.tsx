@@ -118,18 +118,18 @@ export default function ListenQuiz() {
           {choices.map((c) => {
             const isCorrect = c.hanzi === current.hanzi;
             const isPicked = picked === c.hanzi;
-            let cls = "bg-white hover:bg-blue-50 ring-gray-200";
+            let cls = "bg-white text-gray-900 hover:bg-blue-50 ring-blue-300";
             if (picked) {
-              if (isCorrect) cls = "bg-green-100 ring-green-500";
-              else if (isPicked) cls = "bg-red-100 ring-red-500";
-              else cls = "bg-white opacity-60 ring-gray-200";
+              if (isCorrect) cls = "bg-green-100 text-green-900 ring-green-500";
+              else if (isPicked) cls = "bg-red-100 text-red-900 ring-red-500";
+              else cls = "bg-white text-gray-500 ring-gray-200";
             }
             return (
               <button
                 key={c.hanzi}
                 onClick={() => onPick(c)}
                 disabled={!!picked}
-                className={`rounded-xl px-4 py-3 text-left font-semibold ring-2 transition ${cls}`}
+                className={`rounded-xl px-4 py-4 text-center text-lg font-semibold ring-2 transition disabled:cursor-default ${cls}`}
               >
                 {c.vietnamese}
               </button>

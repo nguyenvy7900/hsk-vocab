@@ -108,12 +108,12 @@ export default function MatchQuiz() {
               onClick={() => onPickHanzi(p.hanzi)}
               disabled={isMatched}
               style={{ gridRow: rowIdx + 1, gridColumn: 1 }}
-              className={`flex items-center justify-center rounded-xl px-4 py-4 text-3xl font-bold ring-2 transition ${
+              className={`flex items-center justify-center rounded-xl px-3 py-4 text-2xl sm:text-3xl font-bold ring-2 transition disabled:cursor-default ${
                 isMatched
-                  ? "bg-green-100 text-green-600 opacity-60 ring-green-300"
+                  ? "bg-green-100 text-green-700 opacity-70 ring-green-400"
                   : isPicked
-                  ? "bg-purple-100 ring-purple-500"
-                  : "bg-white ring-gray-200 hover:bg-purple-50"
+                  ? "bg-purple-100 text-purple-900 ring-purple-500"
+                  : "bg-white text-gray-900 ring-purple-300 hover:bg-purple-50"
               }`}
             >
               {p.hanzi}
@@ -130,14 +130,14 @@ export default function MatchQuiz() {
               onClick={() => onPickVn(p)}
               disabled={isMatched || !pickedHanzi}
               style={{ gridRow: rowIdx + 1, gridColumn: 2 }}
-              className={`flex items-center justify-center rounded-xl px-4 py-4 text-center text-base font-semibold ring-2 transition ${
+              className={`flex items-center justify-center rounded-xl px-3 py-4 text-center text-sm sm:text-base font-semibold ring-2 transition disabled:cursor-default ${
                 isMatched
-                  ? "bg-green-100 text-green-700 opacity-60 ring-green-300"
+                  ? "bg-green-100 text-green-700 opacity-70 ring-green-400"
                   : isWrong
-                  ? "bg-red-100 ring-red-500"
+                  ? "bg-red-100 text-red-900 ring-red-500"
                   : pickedHanzi
-                  ? "bg-white ring-purple-300 hover:bg-purple-50"
-                  : "bg-white opacity-70 ring-gray-200"
+                  ? "bg-white text-gray-900 ring-purple-400 hover:bg-purple-50"
+                  : "bg-white text-gray-700 ring-gray-300"
               }`}
             >
               {p.vietnamese}
