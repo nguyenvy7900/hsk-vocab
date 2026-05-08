@@ -50,6 +50,12 @@ hsk-vocab/
 └── package.json
 ```
 
+## Lưu ý về đăng nhập
+
+- Web dùng **Supabase Auth Magic Link**: nhập email → nhận link đăng nhập → bấm link là vào.
+- Supabase **free tier** giới hạn ~2-3 email/giờ. Nếu thử nhiều lần sẽ gặp lỗi `email rate limit exceeded` — chờ 1 tiếng hoặc thử email khác.
+- Email link có thể vào thư mục **Spam/Quảng cáo**. Người gửi: `noreply@mail.app.supabase.io`.
+
 ## Tác giả
 
 BTVN SEONGON — Học viên: nguyenvy7900
