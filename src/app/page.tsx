@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { VocabItem } from "@/data/vocab";
 import { useLearned } from "@/lib/useLearned";
 import { speakChinese } from "@/lib/speak";
+import { AuthBar } from "@/components/AuthBar";
 
 type Level = 1 | 2 | 3;
 
@@ -35,6 +36,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 px-4 py-8">
       <div className="mx-auto max-w-5xl">
+        <AuthBar />
         <header className="mb-8 text-center">
           <h1 className="mb-2 text-4xl font-bold text-red-700">
             学中文 · Học từ vựng tiếng Trung
