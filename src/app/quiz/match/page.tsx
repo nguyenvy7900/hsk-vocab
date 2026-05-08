@@ -91,60 +91,59 @@ export default function MatchQuiz() {
         Đã ghép: <span className="font-bold">{matched.size}/{pairs.length}</span> · Bấm 1 chữ Hán bên trái rồi bấm nghĩa Việt bên phải để ghép
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <h3 className="text-center text-sm font-semibold text-gray-500">
-            Chữ Hán
-          </h3>
-          {pairs.map((p) => {
-            const isMatched = matched.has(p.hanzi);
-            const isPicked = pickedHanzi === p.hanzi;
-            return (
-              <button
-                key={p.hanzi}
-                onClick={() => onPickHanzi(p.hanzi)}
-                disabled={isMatched}
-                className={`w-full rounded-xl px-4 py-4 text-3xl font-bold ring-2 transition ${
-                  isMatched
-                    ? "bg-green-100 text-green-600 opacity-60 ring-green-300"
-                    : isPicked
-                    ? "bg-purple-100 ring-purple-500"
-                    : "bg-white ring-gray-200 hover:bg-purple-50"
-                }`}
-              >
-                {p.hanzi}
-              </button>
-            );
-          })}
-        </div>
+      <div className="mb-2 grid grid-cols-2 gap-4">
+        <h3 className="text-center text-sm font-semibold text-gray-500">Chữ Hán</h3>
+        <h3 className="text-center text-sm font-semibold text-gray-500">Nghĩa Việt</h3>
+      </div>
+      <div
+        className="grid auto-rows-fr grid-cols-2 gap-x-4 gap-y-2"
+        style={{ gridTemplateRows: `repeat(${pairs.length}, minmax(0, 1fr))` }}
+      >
+        {pairs.map((p, rowIdx) => {
+          const isMatched = matched.has(p.hanzi);
+          const isPicked = pickedHanzi === p.hanzi;
+          return (
+            <button
+              key={p.hanzi}
+              onClick={() => onPickHanzi(p.hanzi)}
+              disabled={isMatched}
+              style={{ gridRow: rowIdx + 1, gridColumn: 1 }}
+              className={`flex items-center justify-center rounded-xl px-4 py-4 text-3xl font-bold ring-2 transition ${
+                isMatched
+                  ? "bg-green-100 text-green-600 opacity-60 ring-green-300"
+                  : isPicked
+                  ? "bg-purple-100 ring-purple-500"
+                  : "bg-white ring-gray-200 hover:bg-purple-50"
+              }`}
+            >
+              {p.hanzi}
+            </button>
+          );
+        })}
 
-        <div className="space-y-2">
-          <h3 className="text-center text-sm font-semibold text-gray-500">
-            Nghĩa Việt
-          </h3>
-          {vnOrder.map((p) => {
-            const isMatched = matched.has(p.hanzi);
-            const isWrong = wrongFlash === p.hanzi;
-            return (
-              <button
-                key={p.hanzi + "-vn"}
-                onClick={() => onPickVn(p)}
-                disabled={isMatched || !pickedHanzi}
-                className={`w-full rounded-xl px-4 py-4 text-base font-semibold ring-2 transition ${
-                  isMatched
-                    ? "bg-green-100 text-green-700 opacity-60 ring-green-300"
-                    : isWrong
-                    ? "bg-red-100 ring-red-500"
-                    : pickedHanzi
-                    ? "bg-white ring-purple-300 hover:bg-purple-50"
-                    : "bg-white opacity-70 ring-gray-200"
-                }`}
-              >
-                {p.vietnamese}
-              </button>
-            );
-          })}
-        </div>
+        {vnOrder.map((p, rowIdx) => {
+          const isMatched = matched.has(p.hanzi);
+          const isWrong = wrongFlash === p.hanzi;
+          return (
+            <button
+              key={p.hanzi + "-vn"}
+              onClick={() => onPickVn(p)}
+              disabled={isMatched || !pickedHanzi}
+              style={{ gridRow: rowIdx + 1, gridColumn: 2 }}
+              className={`flex items-center justify-center rounded-xl px-4 py-4 text-center text-base font-semibold ring-2 transition ${
+                isMatched
+                  ? "bg-green-100 text-green-700 opacity-60 ring-green-300"
+                  : isWrong
+                  ? "bg-red-100 ring-red-500"
+                  : pickedHanzi
+                  ? "bg-white ring-purple-300 hover:bg-purple-50"
+                  : "bg-white opacity-70 ring-gray-200"
+              }`}
+            >
+              {p.vietnamese}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
