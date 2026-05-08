@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { VocabItem } from "@/data/vocab";
+import { useLearned } from "@/lib/useLearned";
+import { speakChinese } from "@/lib/speak";
 
 type Level = 1 | 2 | 3;
 
@@ -10,6 +13,7 @@ export default function Home() {
   const [items, setItems] = useState<VocabItem[]>([]);
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const { learned, toggle: toggleLearned, hydrated } = useLearned();
 
   useEffect(() => {
     setLoading(true);
@@ -22,20 +26,11 @@ export default function Home() {
       });
   }, [level]);
 
-  const speak = (text: string) => {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      alert("Trình duyệt của bạn không hỗ trợ phát âm. Hãy dùng Chrome hoặc Edge.");
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "zh-CN";
-    u.rate = 0.85;
-    window.speechSynthesis.speak(u);
-  };
-
-  const toggle = (i: number) =>
+  const toggleReveal = (i: number) =>
     setRevealed((prev) => ({ ...prev, [i]: !prev[i] }));
+
+  const learnedCount = items.filter((it) => learned.has(it.hanzi)).length;
+  const progress = items.length > 0 ? (learnedCount / items.length) * 100 : 0;
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 px-4 py-8">
@@ -49,7 +44,30 @@ export default function Home() {
           </p>
         </header>
 
-        <div className="mb-6 flex justify-center gap-2">
+        {/* Nav vào game */}
+        <div className="mb-6 flex flex-wrap justify-center gap-2">
+          <Link
+            href="/quiz/listen"
+            className="rounded-full bg-blue-600 px-5 py-2 font-semibold text-white shadow hover:bg-blue-700"
+          >
+            🎧 Game: Nghe → chọn nghĩa
+          </Link>
+          <Link
+            href="/quiz/pinyin"
+            className="rounded-full bg-green-600 px-5 py-2 font-semibold text-white shadow hover:bg-green-700"
+          >
+            🔤 Game: Chữ Hán → chọn pinyin
+          </Link>
+          <Link
+            href="/quiz/match"
+            className="rounded-full bg-purple-600 px-5 py-2 font-semibold text-white shadow hover:bg-purple-700"
+          >
+            🧩 Game: Ghép cặp
+          </Link>
+        </div>
+
+        {/* Lọc HSK */}
+        <div className="mb-4 flex justify-center gap-2">
           {([1, 2, 3] as Level[]).map((lv) => (
             <button
               key={lv}
@@ -65,8 +83,26 @@ export default function Home() {
           ))}
         </div>
 
+        {/* Tiến độ */}
+        {hydrated && items.length > 0 && (
+          <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+            <div className="mb-1 flex justify-between text-sm font-semibold text-gray-700">
+              <span>Tiến độ HSK {level}</span>
+              <span>
+                Đã thuộc {learnedCount}/{items.length}
+              </span>
+            </div>
+            <div className="h-3 w-full rounded-full bg-gray-200">
+              <div
+                className="h-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         <p className="mb-4 text-center text-sm text-gray-500">
-          Bấm vào thẻ để xem pinyin & nghĩa · Bấm 🔊 để nghe phát âm
+          Bấm 🔊 để nghe · Bấm thẻ để hiện pinyin/nghĩa · Bấm ✅ để đánh dấu đã thuộc
         </p>
 
         {loading ? (
@@ -75,46 +111,61 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item, i) => {
               const open = revealed[i];
+              const isLearned = learned.has(item.hanzi);
               return (
                 <div
-                  key={i}
-                  className="rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100 transition hover:shadow-lg"
+                  key={item.hanzi + i}
+                  className={`rounded-2xl bg-white p-5 shadow-md ring-1 transition hover:shadow-lg ${
+                    isLearned
+                      ? "opacity-60 ring-green-400"
+                      : "ring-gray-100"
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <button
-                      onClick={() => toggle(i)}
+                      onClick={() => toggleReveal(i)}
                       className="flex-1 text-left"
                     >
-                      <div className="text-4xl font-bold text-gray-900">
+                      <div className="text-5xl font-bold text-gray-900">
                         {item.hanzi}
                       </div>
                     </button>
-                    <button
-                      onClick={() => speak(item.hanzi)}
-                      className="ml-2 rounded-full bg-red-100 p-2 text-xl hover:bg-red-200"
-                      aria-label="Phát âm"
-                      title="Nghe phát âm"
-                    >
-                      🔊
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => speakChinese(item.hanzi)}
+                        className="rounded-full bg-red-100 p-2 text-xl hover:bg-red-200"
+                        aria-label="Phát âm"
+                        title="Nghe phát âm"
+                      >
+                        🔊
+                      </button>
+                      <button
+                        onClick={() => toggleLearned(item.hanzi)}
+                        className={`rounded-full p-2 text-xl ${
+                          isLearned
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-100 hover:bg-green-100"
+                        }`}
+                        title={isLearned ? "Đã thuộc — bấm để bỏ" : "Đánh dấu đã thuộc"}
+                      >
+                        ✅
+                      </button>
+                    </div>
                   </div>
 
-                  <div
-                    className={`mt-3 ${open ? "" : "invisible"}`}
-                    aria-hidden={!open}
-                  >
-                    <div className="text-lg italic text-red-600">
+                  <div className={`mt-3 ${open ? "" : "invisible"}`} aria-hidden={!open}>
+                    <div className="mb-2 inline-block rounded-lg bg-blue-50 px-3 py-1.5 text-2xl font-bold italic text-blue-700 ring-1 ring-blue-200">
                       {item.pinyin}
                     </div>
-                    <div className="mt-1 text-gray-700">
+                    <div className="rounded-lg bg-yellow-50 px-3 py-2 text-lg font-semibold text-amber-900 ring-1 ring-yellow-200">
                       → {item.vietnamese}
                     </div>
                   </div>
 
                   {!open && (
                     <button
-                      onClick={() => toggle(i)}
-                      className="-mt-12 text-sm text-gray-400 hover:text-red-600"
+                      onClick={() => toggleReveal(i)}
+                      className="-mt-16 text-sm text-gray-400 hover:text-red-600"
                     >
                       [bấm để xem]
                     </button>
